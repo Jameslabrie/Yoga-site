@@ -36,7 +36,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
   // Timer
 
-  let deadline = "2023-01-22";
+  let deadline = "2023-01-24";
 
   function getTimeRemaining(endtime) {
     let t = Date.parse(endtime) - Date.parse(new Date());
@@ -74,4 +74,126 @@ window.addEventListener("DOMContentLoaded", function () {
   }
 
   setClock("timer", deadline);
+
+  // Modal window
+
+  let more = document.querySelector(".more"),
+    overlay = document.querySelector(".overlay"),
+    close = document.querySelector(".popup-close");
+
+  more.addEventListener("click", function () {
+    overlay.style.display = "block";
+    this.classList.add("more-splash");
+    document.body.style.overflow = "hidden";
+  });
+
+  close.addEventListener("click", function () {
+    overlay.style.display = "none";
+    more.classList.remove("move-splash");
+    document.body.style.overflow = "";
+  });
+
+  // Modal Window Request
+
+  let message = {
+    loading: "Идет загрузка...",
+    success: "Спасибо! Мы скоро с Вами свяжемся.",
+    failure: "Ошибка",
+  };
+
+  let form = document.querySelector(".main-form"),
+    input = form.getElementsByTagName("button"),
+    statusMessage = document.createElement("div");
+
+  statusMessage.classList.add("status");
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    form.appendChild(statusMessage);
+
+    let request = new XMLHttpRequest();
+
+    request.open("POST", "server.php");
+    request.setRequestHeader("Content-type", "application/json; charset=utf-8");
+
+    let formData = new FormData(form);
+
+    let obj = {};
+
+    formData.forEach(function (key, value) {
+      obj[key] = value;
+    });
+
+    let json = JSON.stringify(obj);
+    request.send(json);
+
+    request.addEventListener("readystatechange", function () {
+      if (request.readyState === 4 && request.status == 200) {
+        statusMessage.innerHTML = message.success;
+      } else if (request.readyState < 4) {
+        statusMessage.innerHTML = message.loading;
+      } else {
+        statusMessage.innerHTML = message.failure;
+      }
+    });
+
+    for (let i = 0; i < input.length; i++) {
+      input[i] = "";
+    }
+  });
+
+  //Contanct-form request
+
+  let messageContactForm = {
+    loading: "Идет загрузка...",
+    success: "Спасибо! Мы скоро с Вами свяжемся.",
+    failure: "Ошибка",
+  };
+
+  let contactForm = document.getElementById("form"),
+    inputContactForm = contactForm.getElementsByTagName("button"),
+    statusMessageContactForm = document.createElement("div");
+
+  statusMessageContactForm.classList.add("status");
+
+  contactForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    contactForm.appendChild(statusMessageContactForm);
+
+    let requestContactForm = new XMLHttpRequest();
+
+    requestContactForm.open("POST", "server.php");
+    requestContactForm.setRequestHeader(
+      "Content-type",
+      "application/json; charset=utf-8"
+    );
+
+    let formData2 = new FormData(form);
+
+    let obj = {};
+
+    formData2.forEach(function (key, value) {
+      obj[key] = value;
+    });
+
+    let json = JSON.stringify(obj);
+    requestContactForm.send(json);
+
+    requestContactForm.addEventListener("readystatechange", function () {
+      if (
+        requestContactForm.readyState === 4 &&
+        requestContactForm.status == 200
+      ) {
+        statusMessageContactForm.innerHTML = messageContactForm.success;
+      } else if (requestContactForm.readyState < 4) {
+        statusMessageContactForm.innerHTML = messageContactForm.loading;
+      } else {
+        statusMessageContactForm.innerHTML = messageContactForm.failure;
+      }
+    });
+
+    for (let i = 0; i < inputContactForm.length; i++) {
+      inputContactForm[i] = "";
+    }
+  });
 });
